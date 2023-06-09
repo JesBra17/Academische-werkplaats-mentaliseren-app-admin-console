@@ -14,7 +14,7 @@ export class MyElement extends LitElement {
       /**
        * Copy for the read the docs hint.
        */
-      docsHint: { type: String },
+      modules: { type: Array },
 
       /**
        * The number of times the button has been clicked.
@@ -24,33 +24,37 @@ export class MyElement extends LitElement {
   }
 
   constructor() {
-    super()
-    this.docsHint = 'Click on the Vite and Lit logos to learn more'
-    this.count = 0
+    super();
+    this.modules = [];
+    this.count = 0;
   }
 
+  connectedCallback(){
+    super.connectedCallback();
+    fetch('http://localhost:8080/module/all')
+    .then(response => response.json())
+    .then(json => this.modules = json)
+    .catch(error => console.log(error));
+  }
+
+  // (moduleList => {moduleList.map(module => html`
+  //   <li>${module.title}</li><br>
+  //   `)}
+  //   )
   render() {
     return html`
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src=${viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://lit.dev" target="_blank">
-          <img src=${litLogo} class="logo lit" alt="Lit logo" />
-        </a>
-      </div>
-      <slot></slot>
-      <div class="card">
-        <button @click=${this._onClick} part="button">
-          count is ${this.count}
-        </button>
-      </div>
-      <p class="read-the-docs">${this.docsHint}</p>
-    `
-  }
+      ${console.log(this.modules)}
 
-  _onClick() {
-    this.count++
+      ${this.modules
+          .map((module) => 
+          html`
+            <li href="${module}">
+            ${module.title}
+      </li> <br>
+          `
+          )}
+    `
   }
 
   static get styles() {
