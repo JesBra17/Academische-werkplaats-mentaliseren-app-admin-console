@@ -29,6 +29,59 @@ export class MyElement extends LitElement {
     this.count = 0;
   }
 
+  #openAddModule(event) {
+    const editDialog = this.renderRoot.getElementById('dialog-popup')
+    editDialog.showModal();
+  }
+
+  #deleteModule(event) {
+    // fetch("http://localhost:8080/module/deletemodule/" + event.target.value, {
+    //   method: 'DELETE'
+    // });
+    const id = event.target.value;
+    let requestData = {
+      "id": id
+    }
+
+    let fetchOptions = {
+      method: "DELETE",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }                                                                
+    fetch("http://localhost:8080/module/deletemodule", fetchOptions)
+        .then((response) => response.json())
+  }
+  
+  #cancelAddModule(event) {
+    const addDialog = this.renderRoot.getElementById('dialog-popup')
+    addDialog.close();
+  }
+
+  #confirmAddModule(event) {
+    event.preventDefault();
+
+    let requestData = {
+      "title": this.renderRoot.getElementById('module-title').value
+    }
+  
+
+    let fetchOptions = {
+      method: "POST",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }        
+
+    fetch("http://localhost:8080/module/addmodule", fetchOptions)
+        .then((response) => response.json())
+
+    const addDialog = this.renderRoot.getElementById('dialog-popup')
+    addDialog.close();
+  }
+
   connectedCallback(){
     super.connectedCallback();
     fetch('http://localhost:8080/module/all')
@@ -37,97 +90,92 @@ export class MyElement extends LitElement {
     .catch(error => console.log(error));
   }
 
-  // (moduleList => {moduleList.map(module => html`
-  //   <li>${module.title}</li><br>
-  //   `)}
-  //   )
   render() {
+    console.log(this.modules)
     return html`
-      <div>
-      ${console.log(this.modules)}
-
-      ${this.modules
-          .map((module) => 
-          html`
-            <li href="${module}">
-            ${module.title}
-      </li> <br>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+    <button @click="${this.#openAddModule}">Add Module</button>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+          ${
+            this.modules
+            .map((module) => html`
+            <tr>
+              <td data-label="Title">${module.title}</td>
+              <td data-label="Delete"><button @click="${this.#deleteModule}" value=${module.id}><i class="fa-regular fa-copy"></i></button></td>
+            </tr>
           `
           )}
+          </tbody>
+        </table>
+      <dialog id="dialog-popup">
+        <form>
+          <button @click="${this.#cancelAddModule}">Annuleer</button>
+          <h1>Create Module</h1>
+          <fieldset>
+            <label for="moduletitle">Title</label><br>
+            <input type="text" name="moduletitle" id="module-title"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
+          </div>
+        </form>
+      </dialog>
     `
   }
 
   static get styles() {
     return css`
-      :host {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 2rem;
-        text-align: center;
-      }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif
+    }
 
-      .logo {
-        height: 6em;
-        padding: 1.5em;
-        will-change: filter;
-        transition: filter 300ms;
-      }
-      .logo:hover {
-        filter: drop-shadow(0 0 2em #646cffaa);
-      }
-      .logo.lit:hover {
-        filter: drop-shadow(0 0 2em #325cffaa);
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      .card {
-        padding: 2em;
-      }
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
 
-      .read-the-docs {
-        color: #888;
-      }
+    td, th {
+    border: 1px solid #000000;
+    text-align: center;
+    padding: 12px 15px;
+    text-align: center;
+    font-size: 16px;
+    }
 
-      a {
-        font-weight: 500;
-        color: #646cff;
-        text-decoration: inherit;
-      }
-      a:hover {
-        color: #535bf2;
-      }
+    th {
+      background-color: #00C300
+    }
 
-      ::slotted(h1) {
-        font-size: 3.2em;
-        line-height: 1.1;
-      }
+    tr:nth-child(even) {
+      background-color: #E2E2E2;
+    }
 
-      button {
-        border-radius: 8px;
-        border: 1px solid transparent;
-        padding: 0.6em 1.2em;
-        font-size: 1em;
-        font-weight: 500;
-        font-family: inherit;
-        background-color: #1a1a1a;
-        cursor: pointer;
-        transition: border-color 0.25s;
-      }
-      button:hover {
-        border-color: #646cff;
-      }
-      button:focus,
-      button:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color;
-      }
+    button {
+      background-color: #57abe7;
+      border: none;
+      color: black;
+      padding: 12px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-      @media (prefers-color-scheme: light) {
-        a:hover {
-          color: #747bff;
-        }
-        button {
-          background-color: #f9f9f9;
-        }
-      }
+    button:hover {
+      background-color: rgba(0, 119, 204, 0.67);
+    }
     `
   }
 }
