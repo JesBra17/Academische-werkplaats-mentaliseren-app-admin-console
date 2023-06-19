@@ -30,30 +30,32 @@ export class MyElement extends LitElement {
   }
 
   #openAddModule(event) {
-    const editDialog = this.renderRoot.getElementById('dialog-popup')
+    const addModuleDialog = this.renderRoot.getElementById('dialog-addmodule')
+    addModuleDialog.showModal();
+  }
+
+  #openEditModule(event) {
+    const editDialog = this.renderRoot.getElementById('dialog-editmodule')
+    editDialog.showModal();
+  }
+
+  #openEditChapter(event) {
+    const editDialog = this.renderRoot.getElementById('dialog-editchapter')
     editDialog.showModal();
   }
 
   #deleteModule(event) {
-    // fetch("http://localhost:8080/module/deletemodule/" + event.target.value, {
-    //   method: 'DELETE'
-    // });
-
     let fetchOptions = {
       method: "DELETE",
       headers: {
         "Content-type": "application/json"
       }                                                  
     }                                                                
-    fetch("http://localhost:8080/module/deletemodule/" + event.target,value, fetchOptions)
+    fetch("http://localhost:8080/module/deletemodule/" + event.target.value, fetchOptions)
         .then((response) => response.json())
   }
 
   #deleteChapter(event) {
-    // fetch("http://localhost:8080/module/deletemodule/" + event.target.value, {
-    //   method: 'DELETE'
-    // });
-    
     let fetchOptions = {
       method: "DELETE",
       headers: {
@@ -65,15 +67,25 @@ export class MyElement extends LitElement {
   }
   
   #cancelAddModule(event) {
-    const addDialog = this.renderRoot.getElementById('dialog-popup')
+    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
+  }
+
+  #cancelEditModule(event) {
+    const editDialog = this.renderRoot.getElementById('dialog-editmodule')
+    editDialog.close();
+  }
+
+  #cancelEditChapter(event) {
+    const editDialog = this.renderRoot.getElementById('dialog-editchapter')
+    editDialog.close();
   }
 
   #confirmAddModule(event) {
     event.preventDefault();
 
     let requestData = {
-      "title": this.renderRoot.getElementById('module-title').value
+      "title": this.renderRoot.getElementById('module-title-module').value
     }
   
 
@@ -88,7 +100,55 @@ export class MyElement extends LitElement {
     fetch("http://localhost:8080/module/addmodule", fetchOptions)
         .then((response) => response.json())
 
-    const addDialog = this.renderRoot.getElementById('dialog-popup')
+    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
+    addDialog.close();
+  }
+
+  #confirmEditModule(event) {
+    event.preventDefault();
+
+    let requestData = {
+      "id": event.target.value,
+      "title": this.renderRoot.getElementById('module-title-edit').value
+    }
+  
+
+    let fetchOptions = {
+      method: "POST",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }        
+
+    fetch("http://localhost:8080/module/editmodule", fetchOptions)
+        .then((response) => response.json())
+
+    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
+    addDialog.close();
+  }
+
+  #confirmEditChapter(event) {
+    event.preventDefault();
+
+    let requestData = {
+      "id": event.target.value,
+      "title": this.renderRoot.getElementById('module-title-edit').value
+    }
+  
+
+    let fetchOptions = {
+      method: "POST",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }        
+
+    fetch("http://localhost:8080/module/editchapter", fetchOptions)
+        .then((response) => response.json())
+
+    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
   }
 
@@ -118,11 +178,14 @@ export class MyElement extends LitElement {
             this.modules
             .map((module) => html`
             <tr>
-              <td data-label="Title">${module.title}</td>
+              <td data-label="Title">${module.title}<button @click="${this.#openEditModule}" value=${module.id}><i class="fa-regular fa-copy"></i></button></td>
               <td data-label="Chapters">
                 ${
                   module.chapters.map((chapter) => html`
-                  <div>${chapter.chapterName}<button @click="${this.#deleteChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button></div>
+                  <div>${chapter.chapterName}
+                    <button @click="${this.#deleteChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button>
+                    <button @click="${this.#openEditChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button>
+                  </div>
                   `)
                 }
 
@@ -133,16 +196,50 @@ export class MyElement extends LitElement {
           )}
           </tbody>
         </table>
-      <dialog id="dialog-popup">
+
+
+
+      
+      <dialog id="dialog-addmodule">
         <form>
           <button @click="${this.#cancelAddModule}">Annuleer</button>
           <h1>Create Module</h1>
           <fieldset>
             <label for="moduletitle">Title</label><br>
-            <input type="text" name="moduletitle" id="module-title"><br><br>
+            <input type="text" name="moduletitle" id="module-title-add"><br><br>
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
+          </div>
+        </form>
+      </dialog>
+
+
+      <dialog id="dialog-editmodule">
+        <form>
+          <button @click="${this.#cancelEditModule}">Annuleer</button>
+          <h1>Edit Module</h1>
+          <fieldset>
+            <label for="moduletitle">Title</label><br>
+            <input type="text" name="moduletitle" id="module-title-edit"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmEditModule}" id='send-module-button'>Wijzig Module</button>
+          </div>
+        </form>
+      </dialog>
+
+
+      <dialog id="dialog-editchapter">
+        <form>
+          <button @click="${this.#cancelEditChapter}">Annuleer</button>
+          <h1>Edit Chapter</h1>
+          <fieldset>
+            <label for="moduletitle">Title</label><br>
+            <input type="text" name="moduletitle" id="chapter-title-edit"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
           </div>
         </form>
       </dialog>
