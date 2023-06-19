@@ -38,19 +38,29 @@ export class MyElement extends LitElement {
     // fetch("http://localhost:8080/module/deletemodule/" + event.target.value, {
     //   method: 'DELETE'
     // });
-    const id = event.target.value;
-    let requestData = {
-      "id": id
-    }
 
     let fetchOptions = {
       method: "DELETE",
-      body: JSON.stringify(requestData),
       headers: {
         "Content-type": "application/json"
       }                                                  
     }                                                                
-    fetch("http://localhost:8080/module/deletemodule", fetchOptions)
+    fetch("http://localhost:8080/module/deletemodule/" + event.target,value, fetchOptions)
+        .then((response) => response.json())
+  }
+
+  #deleteChapter(event) {
+    // fetch("http://localhost:8080/module/deletemodule/" + event.target.value, {
+    //   method: 'DELETE'
+    // });
+    
+    let fetchOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }                                                                
+    fetch("http://localhost:8080/module/deletechapter/" + event.target.value, fetchOptions)
         .then((response) => response.json())
   }
   
@@ -99,6 +109,7 @@ export class MyElement extends LitElement {
           <thead>
             <tr>
               <th>Title</th>
+              <th>Chapters</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -108,6 +119,14 @@ export class MyElement extends LitElement {
             .map((module) => html`
             <tr>
               <td data-label="Title">${module.title}</td>
+              <td data-label="Chapters">
+                ${
+                  module.chapters.map((chapter) => html`
+                  <div>${chapter.chapterName}<button @click="${this.#deleteChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button></div>
+                  `)
+                }
+
+              </td>
               <td data-label="Delete"><button @click="${this.#deleteModule}" value=${module.id}><i class="fa-regular fa-copy"></i></button></td>
             </tr>
           `
