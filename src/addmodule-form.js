@@ -22,14 +22,6 @@ const EDIT_DIALOG_CLOSE_EVENT = 'close-edit-dialog'
 export default class AddModuleForm extends LitElement {
   static get properties() {
     return { 
-      newrouteId: { type: Number }, 
-      start: { type: String }, 
-      end: { type: String },
-      transport: { type: String },
-      ride: { type: String },
-      favourited: { type: Boolean },
-      co2: { type: Number },
-      selectedRouteId: { type: Number }
     };
   }
 
@@ -37,16 +29,6 @@ export default class AddModuleForm extends LitElement {
     super();
 
     //Make connections with the service layer where all promises are made
-    this.newrouteservice = new NewRouteService();
-    this.newrouteId = -1;
-    this.start = "";
-    this.end = "";
-    this.transport = "";
-    this.ride = "";
-    this.favourited = false;
-    this.co2 = 0;
-    this.selectedRouteId = 0;
-    const date = new Date();
   }
 
   connectedCallback() {

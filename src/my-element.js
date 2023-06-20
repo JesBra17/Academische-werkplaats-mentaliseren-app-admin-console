@@ -35,13 +35,18 @@ export class MyElement extends LitElement {
   }
 
   #openEditModule(event) {
-    const editDialog = this.renderRoot.getElementById('dialog-editmodule')
-    editDialog.showModal();
+    const editModuleDialog = this.renderRoot.getElementById('dialog-editmodule')
+    editModuleDialog.showModal();
   }
 
   #openEditChapter(event) {
-    const editDialog = this.renderRoot.getElementById('dialog-editchapter')
-    editDialog.showModal();
+    const editChapterDialog = this.renderRoot.getElementById('dialog-editchapter')
+    editChapterDialog.showModal();
+  }
+
+  #openAddChapter(event) {
+    const addChapterDialog = this.renderRoot.getElementById('dialog-addchapter')
+    addChapterDialog.showModal();
   }
 
   #deleteModule(event) {
@@ -98,6 +103,29 @@ export class MyElement extends LitElement {
     }        
 
     fetch("http://localhost:8080/module/addmodule", fetchOptions)
+        .then((response) => response.json())
+
+    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
+    addDialog.close();
+  }
+
+  #confirmAddChapter(event) {
+    event.preventDefault();
+
+    let requestData = {
+      "title": this.renderRoot.getElementById('chapter-title-add').value
+    }
+  
+
+    let fetchOptions = {
+      method: "POST",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json"
+      }                                                  
+    }        
+
+    fetch("http://localhost:8080/module/addchapter", fetchOptions)
         .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
@@ -170,6 +198,7 @@ export class MyElement extends LitElement {
             <tr>
               <th>Title</th>
               <th>Chapters</th>
+              <th>Add Chapter</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -178,19 +207,20 @@ export class MyElement extends LitElement {
             this.modules
             .map((module) => html`
             <tr>
-              <td data-label="Title">${module.title}<button @click="${this.#openEditModule}" value=${module.id}><i class="fa-regular fa-copy"></i></button></td>
+              <td data-label="Title">${module.title}<button @click="${this.#openEditModule}" value=${module.id}>Edit Module</button></td>
               <td data-label="Chapters">
                 ${
                   module.chapters.map((chapter) => html`
                   <div>${chapter.chapterName}
-                    <button @click="${this.#deleteChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button>
-                    <button @click="${this.#openEditChapter}" value=${chapter.id}><i class="fa-regular fa-copy"></i></button>
+                    <button @click="${this.#deleteChapter}" value=${chapter.id}>Delete Chapter</button>
+                    <button @click="${this.#openEditChapter}" value=${chapter.id}>Edit Chapter</button>
                   </div>
                   `)
                 }
 
               </td>
-              <td data-label="Delete"><button @click="${this.#deleteModule}" value=${module.id}><i class="fa-regular fa-copy"></i></button></td>
+              <td data-label="Add-Chapter"><button @click="${this.#openAddChapter}" value=${module.id}>Add Chapter</button></td>
+              <td data-label="Delete"><button @click="${this.#deleteModule}" value=${module.id}>Delete</button></td>
             </tr>
           `
           )}
@@ -240,6 +270,20 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="dialog-addchapter">
+        <form>
+          <button @click="${this.#cancelEditChapter}">Annuleer</button>
+          <h1>Add Chapter</h1>
+          <fieldset>
+            <label for="moduletitle">Title</label><br>
+            <input type="text" name="moduletitle" id="chapter-title-add"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>
           </div>
         </form>
       </dialog>
