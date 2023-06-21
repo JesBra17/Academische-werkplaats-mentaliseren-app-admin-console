@@ -12,8 +12,7 @@ export const router = new Router(outlet);
 
 router.setRoutes([
 
-  {path: '/dashboard.html', component: 'dashboard-page'},
-
-  {path: '/', component: 'dashboard'},
+  {path: '/dashboard.html', component: 'my-element'},
+  {path: '/', component: 'my-element'},
 
 ]);

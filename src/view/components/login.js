@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit'
 
-import Config from '../../service/config'
+import Config from '../../service/config';
 
 export class Login extends LitElement {
   static get properties() {

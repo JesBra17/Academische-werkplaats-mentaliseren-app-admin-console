@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit'
-import Config from '../../service/config'
 import { Login } from './login'
+import Config from '../../service/config';
 
 
 /**
