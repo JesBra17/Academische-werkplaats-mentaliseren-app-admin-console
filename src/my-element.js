@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit'
 import litLogo from './assets/lit.svg'
 import viteLogo from '/vite.svg'
+import Config from './service/config'
 
 /**
  * An example element.
@@ -20,6 +21,7 @@ export class MyElement extends LitElement {
        * The number of times the button has been clicked.
        */
       count: { type: Number },
+      url: { type: String }
     }
   }
 
@@ -27,6 +29,7 @@ export class MyElement extends LitElement {
     super();
     this.modules = [];
     this.count = 0;
+    this.url = new Config().getUrl();
   }
 
   #openAddModule(event) {
@@ -90,7 +93,7 @@ export class MyElement extends LitElement {
     event.preventDefault();
 
     let requestData = {
-      "title": this.renderRoot.getElementById('module-title-module').value
+      "title": this.renderRoot.getElementById('module-title-add').value
     }
   
 
@@ -182,7 +185,7 @@ export class MyElement extends LitElement {
 
   connectedCallback(){
     super.connectedCallback();
-    fetch('http://localhost:8080/module/all')
+    fetch(`${this.url}/module/all`)
     .then(response => response.json())
     .then(json => this.modules = json)
     .catch(error => console.log(error));
