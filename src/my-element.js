@@ -56,7 +56,7 @@ export class MyElement extends LitElement {
         "Content-type": "application/json"
       }                                                  
     }                                                                
-    fetch("http://localhost:8080/module/deletemodule/" + event.target.value, fetchOptions)
+    fetch(`${this.url}/module/deletemodule/` + event.target.value, fetchOptions)
         .then((response) => response.json())
   }
 
@@ -67,7 +67,7 @@ export class MyElement extends LitElement {
         "Content-type": "application/json"
       }                                                  
     }                                                                
-    fetch("http://localhost:8080/module/deletechapter/" + event.target.value, fetchOptions)
+    fetch(`${this.url}/module/deletechapter/` + event.target.value, fetchOptions)
         .then((response) => response.json())
   }
   
@@ -102,7 +102,7 @@ export class MyElement extends LitElement {
       }                                                  
     }        
 
-    fetch("http://localhost:8080/module/addmodule", fetchOptions)
+    fetch(`${this.url}/module/addmodule`, fetchOptions)
         .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
@@ -125,7 +125,7 @@ export class MyElement extends LitElement {
       }                                                  
     }        
 
-    fetch("http://localhost:8080/module/addchapter", fetchOptions)
+    fetch(`${this.url}/module/addchapter`, fetchOptions)
         .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
@@ -149,7 +149,7 @@ export class MyElement extends LitElement {
       }                                                  
     }        
 
-    fetch("http://localhost:8080/module/editmodule", fetchOptions)
+    fetch(`${this.url}/module/editmodule`, fetchOptions)
         .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
@@ -173,7 +173,7 @@ export class MyElement extends LitElement {
       }                                                  
     }        
 
-    fetch("http://localhost:8080/module/editchapter", fetchOptions)
+    fetch(`${this.url}/module/editchapter`, fetchOptions)
         .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
