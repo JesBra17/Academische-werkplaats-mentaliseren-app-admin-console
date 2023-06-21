@@ -56,7 +56,8 @@ export class MyElement extends LitElement {
     let fetchOptions = {
       method: "DELETE",
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletemodule/` + event.target.value, fetchOptions)
@@ -67,7 +68,8 @@ export class MyElement extends LitElement {
     let fetchOptions = {
       method: "DELETE",
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletechapter/` + event.target.value, fetchOptions)
@@ -101,7 +103,8 @@ export class MyElement extends LitElement {
       method: "POST",
       body: JSON.stringify(requestData),
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }        
 
@@ -124,7 +127,8 @@ export class MyElement extends LitElement {
       method: "POST",
       body: JSON.stringify(requestData),
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }        
 
@@ -148,7 +152,8 @@ export class MyElement extends LitElement {
       method: "POST",
       body: JSON.stringify(requestData),
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }        
 
@@ -172,7 +177,8 @@ export class MyElement extends LitElement {
       method: "POST",
       body: JSON.stringify(requestData),
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }        
 
