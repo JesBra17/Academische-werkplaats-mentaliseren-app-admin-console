@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit'
-import litLogo from './assets/lit.svg'
-import viteLogo from '/vite.svg'
-import Config from './service/config'
+import Config from '../../service/config'
+import { Login } from './login'
+
 
 /**
  * An example element.
