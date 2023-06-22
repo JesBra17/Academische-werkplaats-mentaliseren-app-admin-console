@@ -23,12 +23,15 @@ export class Login extends LitElement {
   }
 
   #checkUsernameAndPassword(event) {
+    console.log("hey")
     event.preventDefault();
 
     let requestData = {
       username: this.renderRoot.getElementById('username-input').value,
       password: this.renderRoot.getElementById('password-input').value,
     };
+
+    console.log(requestData);
 
     let fetchOptions = {
       method: 'POST',
@@ -38,18 +41,19 @@ export class Login extends LitElement {
       },
     };
 
+
     fetch(`${this.url}/auth/login`, fetchOptions)
-        .then(function(response) {
-            if (response.status !== 200) {
-                throw "Wrong credentials"
-            } else {
-                return response.json();
-            }
-        })
-        .then(function(myJason) {
-            localStorage.setItem("JWT", myJason['JWT']);
-            window.location.href = "dashboard.html"
-        });
+      .then(function(response) {
+        if (response.status !== 200) {
+            throw "Wrong credentials"
+        } else {
+            return response.json();
+        }
+      })
+      .then(function(myJason) {
+          localStorage.setItem("JWT", myJason['JWT']);
+          window.location.href = "dashboard.html"
+      });
     
   }
 
