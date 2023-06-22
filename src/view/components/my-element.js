@@ -21,6 +21,9 @@ export class MyElement extends LitElement {
        * The number of times the button has been clicked.
        */
       count: { type: Number },
+      chapterId: { type: Number },
+      moduleId: { type: Number },
+      allPagesOfChapter: { type: Array },
       url: { type: String }
     }
   }
@@ -29,6 +32,9 @@ export class MyElement extends LitElement {
     super();
     this.modules = [];
     this.count = 0;
+    this.chapterId = null;
+    this.moduleId = null;
+    this.allPagesOfChapter = [];
     this.url = new Config().getUrl();
   }
 
@@ -38,18 +44,33 @@ export class MyElement extends LitElement {
   }
 
   #openEditModule(event) {
+    this.moduleId = event.target.value;
     const editModuleDialog = this.renderRoot.getElementById('dialog-editmodule')
     editModuleDialog.showModal();
   }
 
   #openEditChapter(event) {
+    this.chapterId = event.target.value;
     const editChapterDialog = this.renderRoot.getElementById('dialog-editchapter')
     editChapterDialog.showModal();
   }
 
   #openAddChapter(event) {
+    this.moduleId = event.target.value;
     const addChapterDialog = this.renderRoot.getElementById('dialog-addchapter')
     addChapterDialog.showModal();
+  }
+
+  #previewPagesOfChapter(event) {
+    let fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }                                                  
+    }   
+
+    this.allPagesOfChapter = fetch(`${this.url}/module/chapters/` + this.chapterId + `/` + event.target.value, fetchOptions)
   }
 
   #deleteModule(event) {
@@ -72,7 +93,6 @@ export class MyElement extends LitElement {
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletechapter/` + event.target.value, fetchOptions)
-        .then((response) => response.json())
   }
   
   #cancelAddModule(event) {
@@ -96,7 +116,6 @@ export class MyElement extends LitElement {
     let requestData = {
       "title": this.renderRoot.getElementById('module-title-add').value
     }
-  
 
     let fetchOptions = {
       method: "POST",
@@ -104,8 +123,8 @@ export class MyElement extends LitElement {
       headers: {
         "Content-type": "application/json",
         "Authorization": "Bearer " + localStorage.getItem("JWT")
-      }                                                  
-    }        
+      }                                         
+    }
 
     fetch(`${this.url}/module/addmodule`, fetchOptions)
         .then((response) => response.json())
@@ -118,7 +137,7 @@ export class MyElement extends LitElement {
     event.preventDefault();
 
     let requestData = {
-      "moduleId": this.renderRoot.getElementById(''),
+      "moduleId": this.moduleId,
       "chapterName": this.renderRoot.getElementById('chapter-title-add').value
     }
   
@@ -143,13 +162,13 @@ export class MyElement extends LitElement {
     event.preventDefault();
 
     let requestData = {
-      "id": event.target.value,
-      "title": this.renderRoot.getElementById('module-title-edit').value
+      "id": this.moduleId,
+      "title": this.renderRoot.getElementById('module-title-edit').value,
+      "coverImage": this.renderRoot.getElementById("module-image-file").files[0]
     }
-  
 
     let fetchOptions = {
-      method: "POST",
+      method: "PATCH",
       body: JSON.stringify(requestData),
       headers: {
         "Content-type": "application/json",
@@ -158,7 +177,6 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editmodule`, fetchOptions)
-        .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -168,13 +186,13 @@ export class MyElement extends LitElement {
     event.preventDefault();
 
     let requestData = {
-      "id": event.target.value,
-      "title": this.renderRoot.getElementById('module-title-edit').value
+      "id": this.chapterId,
+      "title": this.renderRoot.getElementById('chapter-title-edit').value,
+      "coverImage": this.renderRoot.getElementById("chapter-image-file").files[0]
     }
-  
 
     let fetchOptions = {
-      method: "POST",
+      method: "PATCH",
       body: JSON.stringify(requestData),
       headers: {
         "Content-type": "application/json",
@@ -183,7 +201,6 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
-        .then((response) => response.json())
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -252,8 +269,8 @@ export class MyElement extends LitElement {
           <button @click="${this.#cancelAddModule}">Annuleer</button>
           <h1>Create Module</h1>
           <fieldset>
-            <label for="moduletitle">Title</label><br>
-            <input type="text" name="moduletitle" id="module-title-add"><br><br>
+            <label for="module-title">Title</label><br>
+            <input type="text" name="module-title" id="module-title-add"><br><br>
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
@@ -267,8 +284,10 @@ export class MyElement extends LitElement {
           <button @click="${this.#cancelEditModule}">Annuleer</button>
           <h1>Edit Module</h1>
           <fieldset>
-            <label for="moduletitle">Title</label><br>
-            <input type="text" name="moduletitle" id="module-title-edit"><br><br>
+            <label for="module-title">Title</label><br>
+            <input type="text" name="module-title" id="module-title-edit"><br><br>
+            <label for="module-image-file">Image</label><br>
+            <input id="module-image-file" type="file" /><br><br>
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmEditModule}" id='send-module-button'>Wijzig Module</button>
@@ -282,13 +301,16 @@ export class MyElement extends LitElement {
           <button @click="${this.#cancelEditChapter}">Annuleer</button>
           <h1>Edit Chapter</h1>
           <fieldset>
-            <label for="moduletitle">Title</label><br>
-            <input type="text" name="moduletitle" id="chapter-title-edit"><br><br>
+            <label for="module-title">Title</label><br>
+            <input type="text" name="module-title" id="chapter-title-edit"><br><br>
+            <label for="chapter-image-file">Image</label><br>
+            <input id="chapter-image-file" type="file" /><br><br>
           </fieldset><br>
-          <div class='button-window'>
-            <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
-          </div>
         </form>
+        <button @click="${this.#previewPagesOfChapter}" id='preview-chapter-button'></button>
+        <div class='button-window'>
+          <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
+        </div>
       </dialog>
 
       <dialog id="dialog-addchapter">
@@ -296,8 +318,8 @@ export class MyElement extends LitElement {
           <button @click="${this.#cancelEditChapter}">Annuleer</button>
           <h1>Add Chapter</h1>
           <fieldset>
-            <label for="moduletitle">Title</label><br>
-            <input type="text" name="moduletitle" id="chapter-title-add"><br><br>
+            <label for="module-title">Title</label><br>
+            <input type="text" name="module-title" id="chapter-title-add"><br><br>
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>

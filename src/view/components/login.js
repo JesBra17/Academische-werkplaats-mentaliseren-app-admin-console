@@ -23,15 +23,12 @@ export class Login extends LitElement {
   }
 
   #checkUsernameAndPassword(event) {
-    console.log("hey")
     event.preventDefault();
 
     let requestData = {
       username: this.renderRoot.getElementById('username-input').value,
       password: this.renderRoot.getElementById('password-input').value,
     };
-
-    console.log(requestData);
 
     let fetchOptions = {
       method: 'POST',
