@@ -224,20 +224,22 @@ export class MyElement extends LitElement {
             this.modules
             .map((module) => html`
             <tr>
-              <td data-label="Title">${module.title}<button @click="${this.#openEditModule}" value=${module.id}>Edit Module</button></td>
+              <td data-label="Title">${module.title}<button id="title_button" @click="${this.#openEditModule}" value=${module.id}>Edit Module</button></td>
+             
               <td data-label="Chapters">
+                
                 ${
                   module.chapters.map((chapter) => html`
-                  <div>${chapter.chapterName}
-                    <button @click="${this.#deleteChapter}" value=${chapter.id}>Delete Chapter</button>
-                    <button @click="${this.#openEditChapter}" value=${chapter.id}>Edit Chapter</button>
-                  </div>
+                  <div class="button-container">${chapter.chapterName}
+                    <button id="delete_chapter_button_id" @click="${this.#deleteChapter}" value=${chapter.id}>Delete Chapter</button>
+                    <button id="edit_chapter_button_id" @click="${this.#openEditChapter}" value=${chapter.id}>Edit Chapter</button><br><br>
+                  </div><br>
                   `)
                 }
 
               </td>
               <td data-label="Add-Chapter"><button @click="${this.#openAddChapter}" value=${module.id}>Add Chapter</button></td>
-              <td data-label="Delete"><button @click="${this.#deleteModule}" value=${module.id}>Delete</button></td>
+              <td data-label="Delete"><button id=delete_button_id @click="${this.#deleteModule}" value=${module.id}>Delete</button></td>
             </tr>
           `
           )}
@@ -332,6 +334,13 @@ export class MyElement extends LitElement {
     text-align: center;
     font-size: 16px;
     }
+ 
+  td{
+      text-align: left;
+       text-decoration: underline;
+       text-transform: uppercase;
+    }
+
 
     th {
       background-color: #00C300
@@ -341,16 +350,42 @@ export class MyElement extends LitElement {
       background-color: #E2E2E2;
     }
 
-    button {
-      background-color: #57abe7;
-      border: none;
-      color: black;
-      padding: 12px 16px;
-      font-size: 16px;
-      cursor: pointer;
+    #title_button{
+      float: right
     }
+    .button-container {
+    text-align: left;
+    text-transform: capitalize;
+    text-decoration: underline;
+ 
+  }
+  #delete_chapter_button_id {
+    float: right;
+ 
+  }
+  #edit_chapter_button_id{
+    float: right;
+  }
+ 
+
+    button {
+      background-color: #4CAF50;
+      border: none;
+      border-radius:10px;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      display: inline-block;
+      font-size: 13px;
+      margin: 4px 2px;
+      cursor: pointer;
+}
+#delete_chapter_button_id:hover, #delete_button_id:hover{
+  background-color: rgb(220,20,60);
+}
 
     button:hover {
+      border-radius:5px;
       background-color: rgba(0, 119, 204, 0.67);
     }
     `
