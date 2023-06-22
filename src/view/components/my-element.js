@@ -223,7 +223,7 @@ export class MyElement extends LitElement {
           ${
             this.modules
             .map((module) => html`
-            <tr>
+            <tr >
               <td data-label="Title">${module.title}<button id="title_button" @click="${this.#openEditModule}" value=${module.id}>Edit Module</button></td>
               <td data-label="Chapters">
                 ${
@@ -356,6 +356,7 @@ export class MyElement extends LitElement {
       float: right
     }
     .button-container {
+      
     text-align: left;
     text-transform: capitalize;
     text-decoration: underline;
