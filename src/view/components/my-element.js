@@ -225,9 +225,7 @@ export class MyElement extends LitElement {
             .map((module) => html`
             <tr>
               <td data-label="Title">${module.title}<button id="title_button" @click="${this.#openEditModule}" value=${module.id}>Edit Module</button></td>
-             
               <td data-label="Chapters">
-                
                 ${
                   module.chapters.map((chapter) => html`
                   <div class="button-container">${chapter.chapterName}
@@ -251,7 +249,7 @@ export class MyElement extends LitElement {
       
       <dialog id="dialog-addmodule">
         <form>
-          <button @click="${this.#cancelAddModule}">Annuleer</button>
+        
           <h1>Create Module</h1>
           <fieldset>
             <label for="moduletitle">Title</label><br>
@@ -259,6 +257,7 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
+            <button id="annuleer_dialog_addmodule_button"  @click="${this.#cancelAddModule}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -266,7 +265,7 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-editmodule">
         <form>
-          <button @click="${this.#cancelEditModule}">Annuleer</button>
+         
           <h1>Edit Module</h1>
           <fieldset>
             <label for="moduletitle">Title</label><br>
@@ -274,6 +273,7 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmEditModule}" id='send-module-button'>Wijzig Module</button>
+            <button id="annuleer_editmodule_button" @click="${this.#cancelEditModule}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -281,7 +281,7 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-editchapter">
         <form>
-          <button @click="${this.#cancelEditChapter}">Annuleer</button>
+         
           <h1>Edit Chapter</h1>
           <fieldset>
             <label for="moduletitle">Title</label><br>
@@ -289,13 +289,14 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
+            <button id="editchapter_dialog_annnuleer_button" @click="${this.#cancelEditChapter}">Annuleer</button>
           </div>
         </form>
       </dialog>
 
       <dialog id="dialog-addchapter">
         <form>
-          <button @click="${this.#cancelEditChapter}">Annuleer</button>
+  
           <h1>Add Chapter</h1>
           <fieldset>
             <label for="moduletitle">Title</label><br>
@@ -303,6 +304,7 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>
+            <button id="chapter_button_anulleer" @click="${this.#cancelEditChapter}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -338,7 +340,7 @@ export class MyElement extends LitElement {
   td{
       text-align: left;
        text-decoration: underline;
-       text-transform: uppercase;
+        text-transform: uppercase;
     }
 
 
@@ -380,7 +382,9 @@ export class MyElement extends LitElement {
       margin: 4px 2px;
       cursor: pointer;
 }
-#delete_chapter_button_id:hover, #delete_button_id:hover{
+#delete_chapter_button_id:hover, #delete_button_id:hover,
+#annuleer_dialog_addmodule_button:hover,#annuleer_editmodule_button:hover,
+#editchapter_dialog_annnuleer_button:hover,#chapter_button_anulleer:hover{
   background-color: rgb(220,20,60);
 }
 
