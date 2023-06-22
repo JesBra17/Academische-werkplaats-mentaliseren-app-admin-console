@@ -39,6 +39,7 @@ export class Login extends LitElement {
     };
 
     fetch(`${this.url}/auth/login`, fetchOptions)
+<<<<<<< Updated upstream
       .then(function (response) {
         if (response.status !== 200) {
           throw 'Wrong credentials';
@@ -50,6 +51,20 @@ export class Login extends LitElement {
         loginStorage.setItem('JWT', myJson['JWT-token']);
         window.location.href = 'dashboard.html';
       });
+=======
+        .then(function(response) {
+            if (response.status !== 200) {
+                throw "Wrong credentials"
+            } else {
+                return response.json();
+            }
+        })
+        .then(function(myJason) {
+            localStorage.setItem("JWT", myJason['JWT']);
+            window.location.href = "dashboard.html"
+        });
+    
+>>>>>>> Stashed changes
   }
 
   render() {

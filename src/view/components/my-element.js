@@ -61,7 +61,6 @@ export class MyElement extends LitElement {
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletemodule/` + event.target.value, fetchOptions)
-        .then((response) => response.json())
   }
 
   #deleteChapter(event) {
@@ -119,7 +118,8 @@ export class MyElement extends LitElement {
     event.preventDefault();
 
     let requestData = {
-      "title": this.renderRoot.getElementById('chapter-title-add').value
+      "moduleId": this.renderRoot.getElementById(''),
+      "chapterName": this.renderRoot.getElementById('chapter-title-add').value
     }
   
 
@@ -191,10 +191,18 @@ export class MyElement extends LitElement {
 
   connectedCallback(){
     super.connectedCallback();
-    fetch(`${this.url}/module/all`)
-    .then(response => response.json())
-    .then(json => this.modules = json)
-    .catch(error => console.log(error));
+    let fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }                                                  
+    }        
+
+    fetch(`${this.url}/module/all`, fetchOptions)
+        .then((response) => response.json())
+        .then(json => this.modules = json)
+        .catch(error => console.log(error));
   }
 
   render() {
