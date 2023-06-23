@@ -24,6 +24,7 @@ export class MyElement extends LitElement {
       chapterId: { type: Number },
       moduleId: { type: Number },
       allPagesOfChapter: { type: Array },
+      questions: { type: Array },
       url: { type: String }
     }
   }
@@ -35,6 +36,7 @@ export class MyElement extends LitElement {
     this.chapterId = null;
     this.moduleId = null;
     this.allPagesOfChapter = [];
+    this.questions = [];
     this.url = new Config().getUrl();
   }
 
@@ -59,6 +61,23 @@ export class MyElement extends LitElement {
     this.moduleId = event.target.value;
     const addChapterDialog = this.renderRoot.getElementById('dialog-addchapter')
     addChapterDialog.showModal();
+  }
+
+  #openEditQuestions(event) {
+    this.chapterId = event.target.value;
+
+    let fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }                                                  
+    }   
+
+    this.questions =  fetch(`${this.url}/quiz/questions/` + this.chapterId, fetchOptions)
+
+    const addQuestionsDialog = this.renderRoot.getElementById('dialog-editquestions')
+    addQuestionsDialog.showModal();
   }
 
   #previewPagesOfChapter(event) {
@@ -108,6 +127,11 @@ export class MyElement extends LitElement {
   #cancelEditChapter(event) {
     const editDialog = this.renderRoot.getElementById('dialog-editchapter')
     editDialog.close();
+  }
+
+  #cancelAddQuestion(event) {
+    const questionDialog = this.renderRoot.getElementById('dialog-editquestions')
+    questionDialog.close();
   }
 
   #confirmAddModule(event) {
@@ -184,7 +208,6 @@ export class MyElement extends LitElement {
 
   #confirmEditChapter(event) {
     event.preventDefault();
-
     let requestData = {
       "id": this.chapterId,
       "title": this.renderRoot.getElementById('chapter-title-edit').value,
@@ -201,6 +224,43 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
+
+    // let requestData2 = {
+    //   "file": this.renderRoot.getElementById("chapter-image-file").files[0],
+    //   "chapterId": this.chapterId
+    // }
+
+    // let formData = new FormData();
+    // formData.append('chapterId', this.chapterId);
+    // formData.append(
+    //   'file', 
+    //   this.renderRoot.getElementById("chapter-image-file").files[0])
+
+    // let fetchOptions2 = {
+    //   method: "POST",
+    //   body: formData,
+    //   headers: {
+    //     "Content-type": "application/json",
+    //     "Authorization": "Bearer " + localStorage.getItem("JWT")
+    //   }                                                  
+    // }    
+    
+    const form = this.renderRoot.getElementById("chapter-file-form");
+    // const formData = new FormData(form);
+    let formData = new FormData();
+formData.append("file", form[1].files[0]);
+formData.append("chapterId", this.chapterId);
+    const response = fetch(`${this.url}/admin/files/upload`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }
+    })
+
+    console.log(response)
+
+    // fetch(`${this.url}/admin/files/upload`, fetchOptions2)
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -247,7 +307,8 @@ export class MyElement extends LitElement {
                   module.chapters.map((chapter) => html`
                   <div class="button-container">${chapter.chapterName}
                     <button id="delete_chapter_button_id" @click="${this.#deleteChapter}" value=${chapter.id}>Delete Chapter</button>
-                    <button id="edit_chapter_button_id" @click="${this.#openEditChapter}" value=${chapter.id}>Edit Chapter</button><br><br>
+                    <button id="edit_chapter_button_id" @click="${this.#openEditChapter}" value=${chapter.id}>Edit Chapter</button>
+                    <button id="add_question_button_id" @click="${this.#openEditQuestions}" value=${chapter.id}>Questions</button><br><br>
                   </div><br>
                   `)
                 }
@@ -266,7 +327,6 @@ export class MyElement extends LitElement {
       
       <dialog id="dialog-addmodule">
         <form>
-        
           <h1>Create Module</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -282,7 +342,6 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-editmodule">
         <form>
-         
           <h1>Edit Module</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -299,15 +358,12 @@ export class MyElement extends LitElement {
 
 
       <dialog id="dialog-editchapter">
-        <form>
-         
-          <h1>Edit Chapter</h1>
-          <fieldset>
-            <label for="module-title">Title</label><br>
-            <input type="text" name="module-title" id="chapter-title-edit"><br><br>
-            <label for="chapter-image-file">Image</label><br>
-            <input id="chapter-image-file" type="file" /><br><br>
-          </fieldset><br>
+        <h1>Edit Chapter</h1>
+        <form id="chapter-file-form" enctype="multipart/form-data" action="#" method="post">
+          <label for="chapter-edit-title">Chapter Title</label><br>
+          <input name="chapter-edit-title" id="chapter-title-edit" type="text" /><br><br>
+          <label for="image-file">Image</label><br>
+          <input name="image-file" id="chapter-image-file" type="file" /><br><br>
         </form>
         <button @click="${this.#previewPagesOfChapter}" id='preview-chapter-button'></button>
         <div class='button-window'>
@@ -317,7 +373,6 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-addchapter">
         <form>
-  
           <h1>Add Chapter</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -326,6 +381,40 @@ export class MyElement extends LitElement {
           <div class='button-window'>
             <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>
             <button id="chapter_button_anulleer" @click="${this.#cancelEditChapter}">Annuleer</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="dialog-editquestions">
+        <form>
+          <h1>Questions</h1>
+          <fieldset>
+            ${
+              this.questions
+              .map((module) => html`
+              <label>Question: ${question.text}</label>
+              ${
+                this.questions.answers((answer) => html`
+                  <label>Answer: ${answer.text}</label>
+                  <label>Correct: ${answer.correct}</label>
+                `)
+              }
+              <hr>
+            `
+            )}
+          </fieldset>
+
+          <fieldset>
+            <label for="question-text">Question</label><br>
+            <input type="text" name="question-text" id="question-text"><br><br>
+            <label for="answer-correct">Correct Answer</label><br>
+            <input type="text" name="answer-correct" id="answer-correct"><br><br>
+            <label for="answer-wrong">Wrong Answer</label><br>
+            <input type="text" name="answer-wrong" id="answer-wrong"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Question</button>
+            <button id="question_button_anulleer" @click="${this.#cancelAddQuestion}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -388,6 +477,10 @@ export class MyElement extends LitElement {
  
   }
   #edit_chapter_button_id{
+    float: right;
+  }
+
+  #add_question_button_id {
     float: right;
   }
  
