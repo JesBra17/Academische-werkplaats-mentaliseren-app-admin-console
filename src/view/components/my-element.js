@@ -25,7 +25,7 @@ export class MyElement extends LitElement {
       moduleId: { type: Number },
       allPagesOfChapter: { type: Array },
       questions: { type: Array },
-      url: { type: String }
+      url: { type: String },
     }
   }
 
@@ -64,7 +64,7 @@ export class MyElement extends LitElement {
   }
 
   #openEditQuestions(event) {
-    this.chapterId = event.target.value;
+    this.chapterId = event.target.value;   
 
     let fetchOptions = {
       method: "GET",
@@ -74,7 +74,12 @@ export class MyElement extends LitElement {
       }                                                  
     }   
 
-    this.questions =  fetch(`${this.url}/quiz/questions/` + this.chapterId, fetchOptions)
+    fetch(`${this.url}/quiz/questions/` + this.chapterId, fetchOptions)
+    .then((response) => response.json())
+    .then(json => this.questions = json)
+    .catch(error => console.log(error));
+
+    console.log(this.questions);
 
     const addQuestionsDialog = this.renderRoot.getElementById('dialog-editquestions')
     addQuestionsDialog.showModal();
@@ -182,6 +187,35 @@ export class MyElement extends LitElement {
     addDialog.close();
   }
 
+  #confirmAddQuestion(event) {
+    event.preventDefault();
+
+    let requestData = {
+      "chapterId": this.chapterId,
+      "questionText": this.renderRoot.getElementById('question-text').value,
+      "explanation": "",
+      "answers": [
+        {"text": this.renderRoot.getElementById('answer-correct').value, "correct": true},
+        {"text": this.renderRoot.getElementById('answer-wrong').value, "correct": false}
+      ]
+    }
+  
+    let fetchOptions = {
+      method: "POST",
+      body: JSON.stringify(requestData),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }                                                  
+    }        
+
+    fetch(`${this.url}/quiz/addquestion`, fetchOptions)
+        .then((response) => response.json())
+
+    const questionDialog = this.renderRoot.getElementById('dialog-editquestions')
+    questionDialog.close();
+  }
+
   #confirmEditModule(event) {
     event.preventDefault();
 
@@ -224,32 +258,11 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
-
-    // let requestData2 = {
-    //   "file": this.renderRoot.getElementById("chapter-image-file").files[0],
-    //   "chapterId": this.chapterId
-    // }
-
-    // let formData = new FormData();
-    // formData.append('chapterId', this.chapterId);
-    // formData.append(
-    //   'file', 
-    //   this.renderRoot.getElementById("chapter-image-file").files[0])
-
-    // let fetchOptions2 = {
-    //   method: "POST",
-    //   body: formData,
-    //   headers: {
-    //     "Content-type": "application/json",
-    //     "Authorization": "Bearer " + localStorage.getItem("JWT")
-    //   }                                                  
-    // }    
-    
     const form = this.renderRoot.getElementById("chapter-file-form");
     // const formData = new FormData(form);
     let formData = new FormData();
-formData.append("file", form[1].files[0]);
-formData.append("chapterId", this.chapterId);
+    formData.append("file", form[1].files[0]);
+    formData.append("chapterId", this.chapterId);
     const response = fetch(`${this.url}/admin/files/upload`, {
       method: "POST",
       body: formData,
@@ -283,7 +296,9 @@ formData.append("chapterId", this.chapterId);
   }
 
   render() {
+    this.#openEditQuestions
     console.log(this.modules)
+    console.log(this.questions)
     return html`
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
     <button @click="${this.#openAddModule}">Add Module</button>
@@ -388,22 +403,34 @@ formData.append("chapterId", this.chapterId);
       <dialog id="dialog-editquestions">
         <form>
           <h1>Questions</h1>
-          <fieldset>
+          <hr>
+          ${
+            this.questions
+            .map((question) => html`
+            <h3>Question: ${question.text}</h3>
+            <table>
+                <thead>
+                  <tr>
+                    <th>Answer Text</th>
+                    <th>Correct</th>
+                  </tr>
+                </thead>
+            <tbody>
             ${
-              this.questions
-              .map((module) => html`
-              <label>Question: ${question.text}</label>
-              ${
-                this.questions.answers((answer) => html`
-                  <label>Answer: ${answer.text}</label>
-                  <label>Correct: ${answer.correct}</label>
-                `)
-              }
-              <hr>
-            `
-            )}
-          </fieldset>
+              question.answers.map((answer) => html`
+                <tr>
+                  <td>${answer.text}</td>
+                  <td>${answer.correct}</td>
+                </tr>
+              `)
+            }
+            </tbody>
+            </table>
+            <hr>
+          `
+          )}
 
+          <h1>Add Question</h1>
           <fieldset>
             <label for="question-text">Question</label><br>
             <input type="text" name="question-text" id="question-text"><br><br>
@@ -413,7 +440,7 @@ formData.append("chapterId", this.chapterId);
             <input type="text" name="answer-wrong" id="answer-wrong"><br><br>
           </fieldset><br>
           <div class='button-window'>
-            <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Question</button>
+            <button @click="${this.#confirmAddQuestion}" id='send-module-button'>Add Question</button>
             <button id="question_button_anulleer" @click="${this.#cancelAddQuestion}">Annuleer</button>
           </div>
         </form>
