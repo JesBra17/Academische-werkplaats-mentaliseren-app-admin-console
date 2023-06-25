@@ -118,25 +118,47 @@ export class MyElement extends LitElement {
     }                                                                
     fetch(`${this.url}/module/deletechapter/` + event.target.value, fetchOptions)
   }
+
+  #deleteQuestion(event) {
+    event.preventDefault();
+    let fetchOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }                                                  
+    }                                                                
+    fetch(`${this.url}/quiz/deletequestion/` + event.target.value, fetchOptions).catch((error) => console.log(error))
+  }
   
   #cancelAddModule(event) {
+    event.preventDefault();
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
   }
 
   #cancelEditModule(event) {
+    event.preventDefault();
     const editDialog = this.renderRoot.getElementById('dialog-editmodule')
     editDialog.close();
   }
 
   #cancelEditChapter(event) {
+    event.preventDefault();
     const editDialog = this.renderRoot.getElementById('dialog-editchapter')
     editDialog.close();
   }
 
   #cancelAddQuestion(event) {
+    event.preventDefault();
     const questionDialog = this.renderRoot.getElementById('dialog-editquestions')
     questionDialog.close();
+  }
+
+  #cancelAddChapter(event) {
+    event.preventDefault();
+    const addDialog = this.renderRoot.getElementById('dialog-addchapter')
+    addDialog.close();
   }
 
   #confirmAddModule(event) {
@@ -382,7 +404,8 @@ export class MyElement extends LitElement {
         </form>
         <button @click="${this.#previewPagesOfChapter}" id='preview-chapter-button'></button>
         <div class='button-window'>
-          <button @click="${this.#confirmEditChapter}" id='send-module-button'>Wijzig Chapter</button>
+          <button @click="${this.#confirmEditChapter}">Wijzig Chapter</button>
+          <button @click="${this.#cancelEditChapter}">Annuleer</button>
         </div>
       </dialog>
 
@@ -395,7 +418,7 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>
-            <button id="chapter_button_anulleer" @click="${this.#cancelEditChapter}">Annuleer</button>
+            <button id="chapter_button_anulleer" @click="${this.#cancelAddChapter}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -426,6 +449,7 @@ export class MyElement extends LitElement {
             }
             </tbody>
             </table>
+            <button id="question_button_delete" @click="${this.#deleteQuestion}" value=${question.id}>Delete Question</button>
             <hr>
           `
           )}
