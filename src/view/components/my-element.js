@@ -320,7 +320,6 @@ export class MyElement extends LitElement {
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
     const form = this.renderRoot.getElementById("chapter-file-form");
-    // const formData = new FormData(form);
     let formData = new FormData();
     formData.append("file", form[1].files[0]);
     formData.append("chapterId", this.chapterId);
@@ -334,7 +333,7 @@ export class MyElement extends LitElement {
 
     console.log(response)
 
-    // fetch(`${this.url}/admin/files/upload`, fetchOptions2)
+    fetch(`${this.url}/admin/files/upload`, fetchOptions2)
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -404,6 +403,7 @@ export class MyElement extends LitElement {
       
       <dialog id="dialog-addmodule">
         <form>
+          <button class="close-dialog"  @click="${this.#cancelAddModule}">Annuleer</button>
           <h1>Create Module</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -411,7 +411,6 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
-            <button id="annuleer_dialog_addmodule_button"  @click="${this.#cancelAddModule}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -419,6 +418,7 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-editmodule">
         <form>
+          <button class="close-dialog" @click="${this.#cancelEditModule}">Annuleer</button>
           <h1>Edit Module</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -428,13 +428,13 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmEditModule}" id='send-module-button'>Wijzig Module</button>
-            <button id="annuleer_editmodule_button" @click="${this.#cancelEditModule}">Annuleer</button>
           </div>
         </form>
       </dialog>
 
 
       <dialog id="dialog-editchapter">
+        <button class="close-dialog" @click="${this.#cancelEditChapter}">Annuleer</button>
         <h1>Edit Chapter</h1>
         <form id="chapter-file-form" enctype="multipart/form-data" action="#" method="post">
           <label for="chapter-edit-title">Chapter Title</label><br>
@@ -451,6 +451,7 @@ export class MyElement extends LitElement {
 
       <dialog id="dialog-addchapter">
         <form>
+          <button class="close-dialog" @click="${this.#cancelAddChapter}">Annuleer</button>
           <h1>Add Chapter</h1>
           <fieldset>
             <label for="module-title">Title</label><br>
@@ -458,15 +459,27 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddChapter}" id='send-module-button'>Add Chapter</button>
-            <button id="chapter_button_anulleer" @click="${this.#cancelAddChapter}">Annuleer</button>
           </div>
         </form>
       </dialog>
 
       <dialog id="dialog-editquestions">
         <form>
-          <h1>Questions</h1>
+          <button class="close-dialog" @click="${this.#cancelAddQuestion}">Annuleer</button>
+          <h1>Add Question</h1>
+          <fieldset>
+            <label for="question-text">Question</label><br>
+            <input type="text" name="question-text" id="question-text"><br><br>
+            <label for="answer-correct">Correct Answer</label><br>
+            <input type="text" name="answer-correct" id="answer-correct"><br><br>
+            <label for="answer-wrong">Wrong Answer</label><br>
+            <input type="text" name="answer-wrong" id="answer-wrong"><br><br>
+          </fieldset><br>
+          <div class='button-window'>
+            <button @click="${this.#confirmAddQuestion}" id='send-module-button'>Add Question</button>
+          </div>
           <hr>
+          <h1>Current Questions</h1>
           ${
             this.questions
             .map((question) => html`
@@ -493,25 +506,12 @@ export class MyElement extends LitElement {
             <hr>
           `
           )}
-
-          <h1>Add Question</h1>
-          <fieldset>
-            <label for="question-text">Question</label><br>
-            <input type="text" name="question-text" id="question-text"><br><br>
-            <label for="answer-correct">Correct Answer</label><br>
-            <input type="text" name="answer-correct" id="answer-correct"><br><br>
-            <label for="answer-wrong">Wrong Answer</label><br>
-            <input type="text" name="answer-wrong" id="answer-wrong"><br><br>
-          </fieldset><br>
-          <div class='button-window'>
-            <button @click="${this.#confirmAddQuestion}" id='send-module-button'>Add Question</button>
-            <button id="question_button_anulleer" @click="${this.#cancelAddQuestion}">Annuleer</button>
-          </div>
         </form>
       </dialog>
 
       <dialog id="dialog-addpage">
         <form>
+          <button class="close-dialog" @click="${this.#cancelAddPage}">Annuleer</button>
           <h1>Add Page</h1>
           <fieldset>
             <label for="writtentext">Write here your text:</label><br><br>
@@ -519,7 +519,6 @@ export class MyElement extends LitElement {
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddPage}" id='send-module-button'>Add Page</button>
-            <button id="chapter_button_anulleer" @click="${this.#cancelAddPage}">Annuleer</button>
           </div>
         </form>
       </dialog>
@@ -563,8 +562,16 @@ export class MyElement extends LitElement {
       background-color: #00C300
     }
 
+    dialog {
+      min-width: 80%;
+    }
+
     tr:nth-child(even) {
       background-color: #E2E2E2;
+    }
+
+    .close-dialog {
+      float: right;
     }
 
     #title_button{
