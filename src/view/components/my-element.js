@@ -218,7 +218,7 @@ export class MyElement extends LitElement {
     fetch(`${this.url}/module/addchapter`, fetchOptions)
         .then((response) => response.json())
 
-    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
+    const addDialog = this.renderRoot.getElementById('dialog-addchapter')
     addDialog.close();
   }
 
@@ -301,7 +301,7 @@ export class MyElement extends LitElement {
     addDialog.close();
   }
 
-  #confirmEditChapter(event) {
+  #confirmEditChapterTitle(event) {
     event.preventDefault();
     let requestData = {
       "id": this.chapterId,
@@ -319,9 +319,17 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
+
+    const addDialog = this.renderRoot.getElementById('dialog-editchapter')
+    addDialog.close();
+  }
+
+  #confirmUploadFileToChapter(event) {
+    event.preventDefault();
+
     const form = this.renderRoot.getElementById("chapter-file-form");
     let formData = new FormData();
-    formData.append("file", form[1].files[0]);
+    formData.append("file", form[0].files[0]);
     formData.append("chapterId", this.chapterId);
     const response = fetch(`${this.url}/admin/files/upload`, {
       method: "POST",
@@ -330,13 +338,23 @@ export class MyElement extends LitElement {
         "Authorization": "Bearer " + localStorage.getItem("JWT")
       }
     })
-
-    console.log(response)
-
-    fetch(`${this.url}/admin/files/upload`, fetchOptions2)
-
-    const addDialog = this.renderRoot.getElementById('dialog-addmodule')
-    addDialog.close();
+    .then((response) => {
+      let filepreview = this.renderRoot.getElementById("filepreview")
+      if (response.ok){
+        filepreview.innerText = "";
+        let file = document.createElement("embed");
+        file.src = `${this.url}/module/chapter/${this.chapterId}/${form[0].files[0].name}`;
+        filepreview.appendChild(file);
+      } else {
+        filepreview.innerText = "";
+        const errorMessage = document.createElement("p");
+        errorMessage.innerText = "File failed to upload!";
+        errorMessage.style.color = "red";
+        filepreview.appendChild(errorMessage);
+      }
+    }
+    )
+    this.renderRoot.getElementById("filepreview").innerText = "Uploading file.";
   }
 
   connectedCallback(){
@@ -408,6 +426,8 @@ export class MyElement extends LitElement {
           <fieldset>
             <label for="module-title">Title</label><br>
             <input type="text" name="module-title" id="module-title-add"><br><br>
+            <label for="module-image-file">Image</label><br>
+            <input id="module-image-file" type="file" /><br><br>
           </fieldset><br>
           <div class='button-window'>
             <button @click="${this.#confirmAddModule}" id='send-module-button'>Stuur Module</button>
@@ -436,17 +456,22 @@ export class MyElement extends LitElement {
       <dialog id="dialog-editchapter">
         <button class="close-dialog" @click="${this.#cancelEditChapter}">Annuleer</button>
         <h1>Edit Chapter</h1>
-        <form id="chapter-file-form" enctype="multipart/form-data" action="#" method="post">
+        <fieldset>
+          <h2>Title</h2>
           <label for="chapter-edit-title">Chapter Title</label><br>
           <input name="chapter-edit-title" id="chapter-title-edit" type="text" /><br><br>
-          <label for="image-file">Image</label><br>
-          <input name="image-file" id="chapter-image-file" type="file" /><br><br>
-        </form>
-        <button @click="${this.#previewPagesOfChapter}" id='preview-chapter-button'></button>
-        <div class='button-window'>
-          <button @click="${this.#confirmEditChapter}">Wijzig Chapter</button>
-          <button @click="${this.#cancelEditChapter}">Annuleer</button>
-        </div>
+          <button @click="${this.#confirmEditChapterTitle}">Edit Title</button>
+        </fieldset>
+        <br><br>
+        <fieldset>
+          <h2>Files</h2>
+          <form id="chapter-file-form" enctype="multipart/form-data" action="#" method="post">
+            <label for="image-file">Image</label><br>
+            <input name="image-file" id="chapter-image-file" type="file" /><br><br>
+          </form>
+          <button @click="${this.#confirmUploadFileToChapter}">Upload Image/Video/Audio File</button>
+          <div id="filepreview"></div>
+        </fieldset>
       </dialog>
 
       <dialog id="dialog-addchapter">
