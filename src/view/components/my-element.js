@@ -277,13 +277,11 @@ export class MyElement extends LitElement {
     addDialog.close();
   }
 
-  #confirmEditModule(event) {
+  #confirmEditModuleTitle(event) {
     event.preventDefault();
-
     let requestData = {
       "id": this.moduleId,
       "title": this.renderRoot.getElementById('module-title-edit').value,
-      "coverImage": this.renderRoot.getElementById("module-image-file").files[0]
     }
 
     let fetchOptions = {
@@ -301,12 +299,44 @@ export class MyElement extends LitElement {
     addDialog.close();
   }
 
+  #confirmUploadFileToModule(event) {
+    event.preventDefault();
+
+    const form = this.renderRoot.getElementById("module-file-form");
+    let formData = new FormData();
+    formData.append("file", form[0].files[0]);
+    formData.append("moduleId", this.moduleId);
+    const response = fetch(`${this.url}/module/admin/module/setcoverimage`, {
+      method: "PATCH",
+      body: formData,
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("JWT")
+      }
+    })
+    .then((response) => {
+      let filepreview = this.renderRoot.getElementById("filepreview")
+      if (response.ok){
+        filepreview.innerText = "";
+        let file = document.createElement("embed");
+        file.src = `${this.url}/module/chapter/${this.chapterId}/${form[0].files[0].name}`;
+        filepreview.appendChild(file);
+      } else {
+        filepreview.innerText = "";
+        const errorMessage = document.createElement("p");
+        errorMessage.innerText = "File failed to upload!";
+        errorMessage.style.color = "red";
+        filepreview.appendChild(errorMessage);
+      }
+    }
+    )
+    this.renderRoot.getElementById("filepreview").innerText = "Uploading file.";
+  }
+
   #confirmEditChapterTitle(event) {
     event.preventDefault();
     let requestData = {
       "id": this.chapterId,
       "title": this.renderRoot.getElementById('chapter-title-edit').value,
-      "coverImage": this.renderRoot.getElementById("chapter-image-file").files[0]
     }
 
     let fetchOptions = {
@@ -437,19 +467,23 @@ export class MyElement extends LitElement {
 
 
       <dialog id="dialog-editmodule">
-        <form>
-          <button class="close-dialog" @click="${this.#cancelEditModule}">Annuleer</button>
-          <h1>Edit Module</h1>
-          <fieldset>
-            <label for="module-title">Title</label><br>
-            <input type="text" name="module-title" id="module-title-edit"><br><br>
+        <h1>Edit Chapter</h1>
+        <fieldset>
+          <h2>Title</h2>
+          <label for="module-title">Module Title</label><br>
+          <input name="module-title" id="module-title-edit" type="text" /><br><br>
+          <button @click="${this.#confirmEditModuleTitle}">Edit Title</button>
+        </fieldset>
+        <br><br>
+        <fieldset>
+          <h2>Files</h2>
+          <form id="module-file-form" enctype="multipart/form-data" action="#" method="post">
             <label for="module-image-file">Image</label><br>
             <input id="module-image-file" type="file" /><br><br>
-          </fieldset><br>
-          <div class='button-window'>
-            <button @click="${this.#confirmEditModule}" id='send-module-button'>Wijzig Module</button>
-          </div>
-        </form>
+          </form>
+          <button @click="${this.#confirmUploadFileToModule}">Upload CoverImage</button>
+          <div id="filepreview"></div>
+        </fieldset>
       </dialog>
 
 
