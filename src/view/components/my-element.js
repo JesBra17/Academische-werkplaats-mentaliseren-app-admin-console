@@ -112,6 +112,7 @@ export class MyElement extends LitElement {
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletemodule/` + event.target.value, fetchOptions)
+    .then(this.#fetchdata());
   }
 
   #deleteChapter(event) {
@@ -123,6 +124,7 @@ export class MyElement extends LitElement {
       }                                                  
     }                                                                
     fetch(`${this.url}/module/deletechapter/` + event.target.value, fetchOptions)
+    .then(this.#fetchdata());
   }
 
   #deleteQuestion(event) {
@@ -134,7 +136,10 @@ export class MyElement extends LitElement {
         "Authorization": "Bearer " + localStorage.getItem("JWT")
       }                                                  
     }                                                                
-    fetch(`${this.url}/quiz/deletequestion/` + event.target.value, fetchOptions).catch((error) => console.log(error))
+    fetch(`${this.url}/quiz/deletequestion/` + event.target.value, fetchOptions)
+    .then(this.#fetchdata())
+    .catch((error) => console.log(error))
+    
   }
   
   #cancelAddModule(event) {
@@ -192,6 +197,7 @@ export class MyElement extends LitElement {
 
     fetch(`${this.url}/module/addmodule`, fetchOptions)
         .then((response) => response.json())
+        .then(this.#fetchdata());
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -217,6 +223,7 @@ export class MyElement extends LitElement {
 
     fetch(`${this.url}/module/addchapter`, fetchOptions)
         .then((response) => response.json())
+        .then(this.#fetchdata());
 
     const addDialog = this.renderRoot.getElementById('dialog-addchapter')
     addDialog.close();
@@ -246,6 +253,7 @@ export class MyElement extends LitElement {
 
     fetch(`${this.url}/quiz/addquestion`, fetchOptions)
         .then((response) => response.json())
+        .then(this.#fetchdata());
 
     const questionDialog = this.renderRoot.getElementById('dialog-editquestions')
     questionDialog.close();
@@ -270,6 +278,7 @@ export class MyElement extends LitElement {
 
     fetch(`${this.url}/module/addpage`, fetchOptions)
         .then((response) => response.json())
+        .then(this.#fetchdata());
 
     this.renderRoot.getElementById('page-body').value = ""
 
@@ -294,6 +303,7 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editmodule`, fetchOptions)
+    .then(this.#fetchdata());
 
     const addDialog = this.renderRoot.getElementById('dialog-addmodule')
     addDialog.close();
@@ -349,6 +359,7 @@ export class MyElement extends LitElement {
     }        
 
     fetch(`${this.url}/module/editchapter`, fetchOptions)
+    .then(this.#fetchdata());
 
     const addDialog = this.renderRoot.getElementById('dialog-editchapter')
     addDialog.close();
@@ -386,9 +397,7 @@ export class MyElement extends LitElement {
     )
     this.renderRoot.getElementById("filepreview").innerText = "Uploading file.";
   }
-
-  connectedCallback(){
-    super.connectedCallback();
+  #fetchdata(){
     let fetchOptions = {
       method: "GET",
       headers: {
@@ -402,6 +411,12 @@ export class MyElement extends LitElement {
         .then(json => this.modules = json)
         .catch(error => console.log(error));
   }
+
+  connectedCallback(){
+    super.connectedCallback();
+    this.#fetchdata()
+  }
+
 
   render() {
     this.#openEditQuestions
