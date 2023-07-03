@@ -54,6 +54,38 @@ export class Login extends LitElement {
     
   }
 
+  #registerUser(event) {
+    event.preventDefault();
+
+    let requestData = {
+      username: this.renderRoot.getElementById('username-input').value,
+      password: this.renderRoot.getElementById('password-input').value,
+    };
+
+    let fetchOptions = {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    };
+
+
+    fetch(`${this.url}/auth/register`, fetchOptions)
+      .then(function(response) {
+        if (response.status !== 200) {
+            throw "Failed to register"
+        } else {
+            return response.json();
+        }
+      })
+      .then(function(myJason) {
+          localStorage.setItem("JWT", myJason['JWT']);
+          location.reload;
+      });
+    
+  }
+
   render() {
     return html`
       <div class="container">
@@ -63,8 +95,10 @@ export class Login extends LitElement {
           <label>Wachtwoord</label>
           <input type="password" id="password-input" /><br /><br />
           <button @click="${this.#checkUsernameAndPassword}">Log In</button>
+          <button @click="${this.#registerUser}">Register</button>
         </form>
       </div>
+      
     `;
   }
 
